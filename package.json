@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "main": "index.js",
   "scripts": {
-    "test": "npx playwright test api.spec.js",
+    "test": "npx playwright test",
     "ui": "npx playwright test --ui",
     "test:report": "npx playwright show-report",
     "test:update-snapshots": "npx playwright test --update-snapshots",
