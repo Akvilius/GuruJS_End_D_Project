@@ -4,11 +4,10 @@
   "main": "index.js",
   "scripts": {
     "test": "npx playwright test",
+    "realWordsTest": "npx playwright test realWords.spec.js",
+    "academyBugsTest": "npx playwright test academybugs.spec.js",
+    "apiTest": "npx playwright test",
     "ui": "npx playwright test --ui",
-    "test:report": "npx playwright show-report",
-    "test:update-snapshots": "npx playwright test --update-snapshots",
-    "allure:generate": "allure generate ./allure-results --clean -o ./allure-report",
-    "allureSingle": "npx allure awesome ./allure-results --single-file",
     "allure": "npx allure awesome ./allure-results",
     "allure:open": "allure open ./allure-report",
     "codegen": "npx playwright codegen https://academybugs.com/find-bugs/"
