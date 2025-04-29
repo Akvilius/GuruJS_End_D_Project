@@ -1,0 +1,416 @@
+# Instructions
+
+- Following Playwright test failed.
+- Explain why, be concise, respect Playwright best practices.
+- Provide a snippet of code with the fix, if possible.
+
+# Test info
+
+- Name: Challenge >> PUT /challenger/guid CREATE
+- Location: /home/runner/work/GuruJS_End_D_Project/GuruJS_End_D_Project/tests/api.spec.js:313:9
+
+# Error details
+
+```
+Error: expect(received).toBe(expected) // Object.is equality
+
+Expected: 201
+Received: 200
+    at /home/runner/work/GuruJS_End_D_Project/GuruJS_End_D_Project/tests/api.spec.js:322:36
+```
+
+# Test source
+
+```ts
+  222 |         const todosService = new TodosService(request);
+  223 |         const response = await todosService.getTodos(header);
+  224 |         expect (response.status()).toBe(200);
+  225 |     });
+  226 |
+  227 | //26
+  228 |     test('GET /todos (200) JSON', {tag: '@Accept'}, async ({request})=>{ 
+  229 |         const header = new HeaderBuilder().addToken(token).addAccept(`application/json`).genereteHeader();
+  230 |         const todosService = new TodosService(request);
+  231 |         const response = await todosService.getTodos(header);
+  232 |         expect (response.status()).toBe(200);
+  233 |     });
+  234 |  //25
+  235 |     test('GET /todos (200) ANY', {tag: '@Accept'}, async ({request})=>{ 
+  236 |         const header = new HeaderBuilder().addToken(token).addAccept(`*/*`).genereteHeader();
+  237 |         const todosService = new TodosService(request);
+  238 |         const response = await todosService.getTodos(header);
+  239 |         expect (response.status()).toBe(200);
+  240 |     });
+  241 |
+  242 | //28
+  243 |     test('GET /todos (200) XML pref', {tag: '@Accept'}, async ({request})=>{ 
+  244 |         const header = new HeaderBuilder().addToken(token).addAccept(`application/xml, application/json`).genereteHeader();
+  245 |         const todosService = new TodosService(request);
+  246 |         const response = await todosService.getTodos(header);
+  247 |         expect (response.status()).toBe(200);
+  248 |     });
+  249 | //29
+  250 |      test('GET /todos (200) no accept', {tag: '@Accept'}, async ({request})=>{ 
+  251 |         const header = new HeaderBuilder().addToken(token).addAccept(``).genereteHeader();
+  252 |         const todosService = new TodosService(request);
+  253 |         const response = await todosService.getTodos(header);
+  254 |         expect (response.status()).toBe(200);
+  255 |     });
+  256 | //30
+  257 |      test('GET /todos (406)', {tag: '@Accept'}, async ({request})=>{ 
+  258 |         const header = new HeaderBuilder().addToken(token).addAccept(`application/gzip`).genereteHeader();
+  259 |         const todosService = new TodosService(request);
+  260 |         const response = await todosService.getTodos(header);
+  261 |         expect (response.status()).toBe(406);
+  262 |     });
+  263 | //31
+  264 |      test('POST /todos XML', {tag: '@ContentType'}, async ({request})=>{ 
+  265 |         const header = new HeaderBuilder().addToken(token).addAccept(`application/xml`).addContent('application/xml').genereteHeader();
+  266 |         const body = `
+  267 |         <todo>
+  268 |         <doneStatus>true</doneStatus>
+  269 |         <description>test</description>
+  270 |         <title>Create</title>
+  271 |         </todo>`;
+  272 |         const todosService = new TodosService(request);
+  273 |         const response = await todosService.postTodos(header,body);
+  274 |         expect (response.status()).toBe(201);
+  275 |     });
+  276 | //32
+  277 |     test('POST /todos JSON', {tag: '@ContentType'}, async ({request})=>{ 
+  278 |         const header = new HeaderBuilder().addToken(token).addAccept(`application/json`).addContent('application/json').genereteHeader();
+  279 |         const todosService = new TodosService(request);
+  280 |         const body = new TodosBuilder().addTitle(3).addDoneStatus().addDescription(1).genereteTodos();
+  281 |         const response = await todosService.postTodos(header,body);
+  282 |         expect (response.status()).toBe(201);
+  283 |     });
+  284 | //33
+  285 |     test('POST /todos (415)', {tag: '@ContentType'}, async ({request})=>{ 
+  286 |         const header = new HeaderBuilder().addToken(token).addAccept(`application/json`).addContent('application/gzip').genereteHeader();
+  287 |         const todosService = new TodosService(request);
+  288 |         const body = new TodosBuilder().addTitle(3).addDoneStatus().addDescription(1).genereteTodos();
+  289 |         const response = await todosService.postTodos(header,body);
+  290 |         expect (response.status()).toBe(415);
+  291 |     });
+  292 | //34
+  293 |     test('GET /challenger/guid (existing X-CHALLENGER)', {tag: '@Restore'}, async ({request})=>{ 
+  294 |         const header = new HeaderBuilder().addToken(token).genereteHeader();
+  295 |         const challengerService = new ChallengerService(request);
+  296 |         const response = await challengerService.getChallengerGuid(header,token);
+  297 |         expect (response.status()).toBe(200);
+  298 |         const data = await response.json();
+  299 |         expect(data).toHaveProperty("challengeStatus");
+  300 |         expect(data.xChallenger).toEqual(token);
+  301 |     });
+  302 |
+  303 | //35
+  304 |     test('PUT /challenger/guid RESTORE', {tag: '@Restore'}, async ({request})=>{ 
+  305 |         const header = new HeaderBuilder().addToken(token).genereteHeader();
+  306 |         const challengerService = new ChallengerService(request);
+  307 |         const responseGet = await challengerService.getChallengerGuid(header,token);
+  308 |         const data = await responseGet.json();
+  309 |         const response = await challengerService.putChallengerGuid(header,data,token);
+  310 |         expect (response.status()).toBe(200);
+  311 |     });
+  312 | //36
+  313 |     test('PUT /challenger/guid CREATE', {tag: '@Restore'}, async ({request})=>{ 
+  314 |         const header = new HeaderBuilder().addToken(token).genereteHeader();
+  315 |         const headerOld = new HeaderBuilder().addToken(token).genereteHeader();
+  316 |         const challengerService = new ChallengerService(request);
+  317 |         const responseGet = await challengerService.getChallengerGuid(header,token);
+  318 |         const data = await responseGet.json();
+  319 |         data['xChallenger'] = oldGuid;
+  320 |         delete data.xAuthToken;
+  321 |         const response = await challengerService.putChallengerGuid(headerOld,data,oldGuid);
+> 322 |         expect (response.status()).toBe(201);// 200 если существует, повторный прогон
+      |                                    ^ Error: expect(received).toBe(expected) // Object.is equality
+  323 |     });
+  324 | //37
+  325 |     test('GET /challenger/database/guid (200)', {tag: '@Restore'}, async ({request})=>{ 
+  326 |         const header = new HeaderBuilder().addToken(token).genereteHeader();
+  327 |         const challengerService = new ChallengerService(request);
+  328 |         const response = await challengerService.getDatabaseGuid(header,token);
+  329 |         expect (response.status()).toBe(200);
+  330 |     });
+  331 | //38
+  332 |     test('PUT /challenger/database/guid (Update)', {tag: '@Restore'}, async ({request})=>{ 
+  333 |         const header = new HeaderBuilder().addToken(token).genereteHeader();
+  334 |         const challengerService = new ChallengerService(request);
+  335 |         const responseGet = await challengerService.getDatabaseGuid(header,token);
+  336 |         const data = await responseGet.json();
+  337 |         const response = await challengerService.putDatabaseGuid(header,data,token);
+  338 |         expect (response.status()).toBe(204);
+  339 |     });
+  340 |
+  341 | //39
+  342 |     test('POST /todos XML to JSON', {tag: '@MixAccept'}, async ({request})=>{ 
+  343 |     const header = new HeaderBuilder().addToken(token).addAccept(`application/json`).addContent('application/xml').genereteHeader();
+  344 |     const body = `
+  345 |         <todo>
+  346 |         <doneStatus>true</doneStatus>
+  347 |         <description>test 006</description>
+  348 |         <title>Create or not</title>
+  349 |         </todo>`;
+  350 |         const todosService = new TodosService(request);
+  351 |         const response = await todosService.postTodos(header,body);
+  352 |         expect (response.status()).toBe(201);
+  353 |     });
+  354 | //40
+  355 |     test('POST /todos JSON to XML', {tag: '@MixAccept'}, async ({request})=>{ 
+  356 |         const header = new HeaderBuilder().addToken(token).addAccept(`application/xml`).addContent('application/json').genereteHeader();
+  357 |         const todosService = new TodosService(request);
+  358 |         const body = new TodosBuilder().addTitle(2).addDoneStatus().addDescription().genereteTodos();
+  359 |         const response = await todosService.postTodos(header,body);
+  360 |         expect (response.status()).toBe(201);
+  361 |     });
+  362 | //41
+  363 |     test('DELETE /heartbeat (405)', {tag: '@StatusCode'}, async ({request})=>{ 
+  364 |         const header = new HeaderBuilder().addToken(token).genereteHeader();
+  365 |         const heartbeatService = new HeartbeatService(request);
+  366 |         const response = await heartbeatService.deleteHeartbeat(header);
+  367 |         expect (response.status()).toBe(405);
+  368 |     });
+  369 | //42
+  370 |     test('PATCH /heartbeat (500)', {tag: '@StatusCode'}, async ({request})=>{ 
+  371 |         const header = new HeaderBuilder().addToken(token).genereteHeader();
+  372 |         const heartbeatService = new HeartbeatService(request);
+  373 |         const response = await heartbeatService.patchHeartbeat(header);
+  374 |         expect (response.status()).toBe(500);
+  375 |     });
+  376 | //43
+  377 |     test('TRACE /heartbeat (501)', {tag: '@StatusCode'}, async ({request})=>{ 
+  378 |         const header = new HeaderBuilder().addToken(token).genereteHeader();
+  379 |         const heartbeatService = new HeartbeatService(request);
+  380 |         const response = await heartbeatService.traceHeartbeat(header);
+  381 |         expect (response.status()).toBe(501);
+  382 |     });
+  383 | //44
+  384 |     test('GET /heartbeat (204)', {tag: '@StatusCode'}, async ({request})=>{ 
+  385 |         const header = new HeaderBuilder().addToken(token).genereteHeader();
+  386 |         const heartbeatService = new HeartbeatService(request);
+  387 |         const response = await heartbeatService.getHeartbeat(header);
+  388 |         expect (response.status()).toBe(204);
+  389 |     });
+  390 | //45
+  391 |     test('POST /heartbeat as DELETE (405)', {tag: '@HTTP'}, async ({request})=>{ 
+  392 |         const header = new HeaderBuilder().addToken(token).addHttpMethod('DELETE').genereteHeader();
+  393 |         const heartbeatService = new HeartbeatService(request);
+  394 |         const response = await heartbeatService.postHeartbeat(header);
+  395 |         expect (response.status()).toBe(405);
+  396 |     });
+  397 | //46
+  398 |     test('POST /heartbeat as PATCH (500)', {tag: '@HTTP'}, async ({request})=>{ 
+  399 |         const header = new HeaderBuilder().addToken(token).addHttpMethod('PATCH').genereteHeader();
+  400 |         const heartbeatService = new HeartbeatService(request);
+  401 |         const response = await heartbeatService.postHeartbeat(header);
+  402 |         expect (response.status()).toBe(500);
+  403 |     });
+  404 | //47
+  405 |     test('POST /heartbeat as Trace (501)', {tag: '@HTTP'}, async ({request})=>{ 
+  406 |
+  407 |         const header = new HeaderBuilder().addToken(token).addHttpMethod('TRACE').genereteHeader();
+  408 |         const heartbeatService = new HeartbeatService(request);
+  409 |         const response = await heartbeatService.postHeartbeat(header);
+  410 |         expect (response.status()).toBe(501);
+  411 |     });
+  412 | //48
+  413 |     test('POST /secret/token (401)', {tag: '@Authentication'}, async ({request})=>{ 
+  414 |         const header = new HeaderBuilder().addToken(token).addAuth("Basic " + Buffer.from("Admin1:Pa55word").toString("base64")).genereteHeader();
+  415 |         const secretService = new SecretService(request);
+  416 |         const response = await secretService.postSecret(header);
+  417 |         expect (response.status()).toBe(401);
+  418 |     });
+  419 | //49
+  420 |     test('POST /secret/token (201)', {tag: '@Authentication'}, async ({request})=>{ 
+  421 |         const header = new HeaderBuilder().addToken(token).addAuth("Basic " + Buffer.from("admin:password").toString("base64")).genereteHeader();
+  422 |         const secretService = new SecretService(request);
+```
+
+# Local changes
+
+```diff
+diff --git a/img/Telegram.svg b/img/Telegram.svg
+new file mode 100644
+index 0000000..c6ec2b3
+--- /dev/null
++++ b/img/Telegram.svg
+@@ -0,0 +1,9 @@
++<?xml version="1.0"?>
++<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 240.1 240.1">
++<linearGradient id="Oval_1_" gradientUnits="userSpaceOnUse" x1="-838.041" y1="660.581" x2="-838.041" y2="660.3427" gradientTransform="matrix(1000 0 0 -1000 838161 660581)">
++ <stop offset="0" style="stop-color:#2AABEE"/>
++ <stop offset="1" style="stop-color:#229ED9"/>
++</linearGradient>
++<circle fill-rule="evenodd" clip-rule="evenodd" fill="url(#Oval_1_)" cx="120.1" cy="120.1" r="120.1"/>
++<path fill-rule="evenodd" clip-rule="evenodd" fill="#FFFFFF" d="M54.3,118.8c35-15.2,58.3-25.3,70-30.2 c33.3-13.9,40.3-16.3,44.8-16.4c1,0,3.2,0.2,4.7,1.4c1.2,1,1.5,2.3,1.7,3.3s0.4,3.1,0.2,4.7c-1.8,19-9.6,65.1-13.6,86.3 c-1.7,9-5,12-8.2,12.3c-7,0.6-12.3-4.6-19-9c-10.6-6.9-16.5-11.2-26.8-18c-11.9-7.8-4.2-12.1,2.6-19.1c1.8-1.8,32.5-29.8,33.1-32.3 c0.1-0.3,0.1-1.5-0.6-2.1c-0.7-0.6-1.7-0.4-2.5-0.2c-1.1,0.2-17.9,11.4-50.6,33.5c-4.8,3.3-9.1,4.9-13,4.8 c-4.3-0.1-12.5-2.4-18.7-4.4c-7.5-2.4-13.5-3.7-13-7.9C45.7,123.3,48.7,121.1,54.3,118.8z"/>
++</svg>
+diff --git a/img/allure.png b/img/allure.png
+new file mode 100644
+index 0000000..2529946
+Binary files /dev/null and b/img/allure.png differ
+diff --git a/img/allure_1.png b/img/allure_1.png
+new file mode 100644
+index 0000000..85c35c8
+Binary files /dev/null and b/img/allure_1.png differ
+diff --git a/img/allure_2.png b/img/allure_2.png
+new file mode 100644
+index 0000000..a2b8f0d
+Binary files /dev/null and b/img/allure_2.png differ
+diff --git a/img/github.png b/img/github.png
+new file mode 100644
+index 0000000..50b8175
+Binary files /dev/null and b/img/github.png differ
+diff --git a/img/jenkins_1.png b/img/jenkins_1.png
+new file mode 100644
+index 0000000..281ac2a
+Binary files /dev/null and b/img/jenkins_1.png differ
+diff --git a/img/telbot.png b/img/telbot.png
+new file mode 100644
+index 0000000..3d223f4
+Binary files /dev/null and b/img/telbot.png differ
+diff --git a/img/testops.png b/img/testops.png
+new file mode 100644
+index 0000000..262322c
+Binary files /dev/null and b/img/testops.png differ
+diff --git a/img/testops_1.png b/img/testops_1.png
+new file mode 100644
+index 0000000..94d1ff5
+Binary files /dev/null and b/img/testops_1.png differ
+diff --git a/img/testops_2.png b/img/testops_2.png
+new file mode 100644
+index 0000000..b58d3bd
+Binary files /dev/null and b/img/testops_2.png differ
+diff --git a/package.json b/package.json
+index bc97f86..5407ca8 100644
+--- a/package.json
++++ b/package.json
+@@ -4,11 +4,10 @@
+   "main": "index.js",
+   "scripts": {
+     "test": "npx playwright test",
++    "realWordsTest": "npx playwright test realWords.spec.js",
++    "academyBugsTest": "npx playwright test academybugs.spec.js",
++    "apiTest": "npx playwright test",
+     "ui": "npx playwright test --ui",
+-    "test:report": "npx playwright show-report",
+-    "test:update-snapshots": "npx playwright test --update-snapshots",
+-    "allure:generate": "allure generate ./allure-results --clean -o ./allure-report",
+-    "allureSingle": "npx allure awesome ./allure-results --single-file",
+     "allure": "npx allure awesome ./allure-results",
+     "allure:open": "allure open ./allure-report",
+     "codegen": "npx playwright codegen https://academybugs.com/find-bugs/"
+diff --git a/readme.md b/readme.md
+new file mode 100644
+index 0000000..1d631ac
+--- /dev/null
++++ b/readme.md
+@@ -0,0 +1,107 @@
++## Проект автоматизации тестирования собранный на основе [курса по автоматизации тестирования на JavaScript + Playwright](https://qa.guru/playwright_js)
++---
++## Содержание
++- [Описание](#Описание)
++- [Стек](#Стек)
++- [Тест-кейсы](#Тест-кейсы)
++- [Запуск тестов и генерация отчетов](#Запуск-тестов-и-генерация-отчетов)
++- [Запуск пайплайна автотестов в Jenkins](#-Запуск-пайплайна-автотестов-в-Jenkins)
++- [Пример Allure-отчета](#-Пример-Allure-отчета)
++- [Пример интеграции с ТестОпс](#-Пример-интеграции-с-ТестОпс)
++- [Уведомления в Telegram чат с ботом](#-уведомления-в-telegram-чат-с-ботом)
++
++---
++## Описание
++
++Данный репозиторий представляет собой объединение всех учебных проектов в один. Он служит для демонстрации итогов обучения.
++
++---
++## Стек
++<div align="center">
++  <img src="https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/javascript/javascript-original.svg" alt="JS" width="50" height="50"/>
++  <img src="https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/playwright/playwright-original.svg" alt="PW" width="50" height="50" />
++  <img src="./img/github.png" alt="GH" width="50" height="50" />
++  <img src="https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/jenkins/jenkins-original.svg" alt="Jenkins" width="50" height="50"/>
++  <img src="./img/allure.png" alt="allure" width="50" height="50"/>
++  <img src="./img/testops.png" alt="TestOps" width="50" height="50"/>
++  <img src="./img/Telegram.svg" alt="Telegram" width="50" height="50"/>
++</div>
++
++В этом репозитории собраны UI и API-тесты, написанные на JavaScript с использованием Playwright. Для CI/CD задействован Jenkins, который обеспечивает выполнение автотестов, генерацию Allure-отчетов, взаимодействие с TestOps и рассылку уведомлений в Telegram.
++
++---
++## Тест-кейсы
++- UI
++  - [RealWorld](https://realworld.qa.guru/)
++    - Пользователь может опубликовать статью
++    - Пользователь может оставить комментарий к статье
++    - Пользователь может изменить пароль
++  - [AcademyBugs](https://academybugs.com/find-bugs/)
++    - Перейти на страницу производителя товара
++    - Перейти на детальную страницу товара в категории "hot item"
++    - Отфильтровать товары по ценовому диапазону "$15.00 - $19.99"
++    - Изменить отображение цен товаров в евро
++    - Изменить количество отображаемых товаров на странице
++- API
++    - 57 тестов из списка [API Challenges Progress](https://apichallenges.herokuapp.com/gui/challenges/)
++---
++## Запуск тестов и генерация отчетов
++
++Команда для локального запуска всех тестов
++```
++npm run test
++```
++Команда для локального запуска UI тестов
++```
++npm run realWordsTest
++npm run academyBugsTest
++```
++Команда для локального запуска API тестов
++```
++npm run apiTest
++```
++Команда для локального формирования отчета
++
++```
++npm run allure
++```
++---
++## <img src="https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/jenkins/jenkins-original.svg" alt="Jenkins" width="25" height="25"/>Запуск пайплайна автотестов в [Jenkins](https://jenkins.autotests.cloud/job/002-akvilius_diplom_js/)
++
++Для запуска пайплайна необходимо авторизоваться на сайте [Jenkins](https://jenkins.autotests.cloud/), перейти в соответствующую [джобу](https://jenkins.autotests.cloud/job/002-akvilius_diplom_js/) и нажать <code>Build Now</code>. После завершения сборки будет сформирован <code>Allure-отчет</code>, результаты сборки будут отправлены в <code>ТестОпс</code>, а так же в <code>Telegram</code>. В разделе <code>Builds</code> напротив номера сборки появятся иконки Allure (cсылка на Allure-отчет так же есть на основной странице) и ТестОпс, перейдя по которым можно посмотреть результаты сборки.
++
++<img src="./img/jenkins_1.png" alt="jenkins" width="100%" height="500"/>
++
++---
++## <img src="./img/allure.png" width="25" height="25"/> Пример [Allure-отчета](https://jenkins.autotests.cloud/job/002-akvilius_diplom_js/allure/)
++<img src="./img/allure_1.png" alt="allure" width="100%" height="400"/>
++<img src="./img/allure_2.png" alt="allure" width="100%" height="400"/>
++
++---
++## <img src="./img/testops.png" width="25" height="25"/>  Пример интеграции с [ТестОпс](https://allure.autotests.cloud/project/4735/dashboards)
++<img src="./img/testops_1.png" alt="testops" width="100%" height="400"/>
++<img src="./img/testops_2.png" alt="testops" width="100%" height="400"/>
++
++---
++
++
++## <img src="./img/Telegram.svg" width="25" height="25"/> Уведомления в Telegram чат с ботом
++
++После завершения сборки специальный бот, созданный в <code>Telegram</code>, автоматически обрабатывает и отправляет сообщение с отчетом о прогоне тестов. Доболнительно запускается задача по крону раз в 4 часа. Результаты бот присылает в группу [**Уведомления о тестах**](https://t.me/+KKSAFc_OhppiNjAy)
++
++### Уведомление из переписки с чат ботом
++
++
++<p align="center">
++<img src="./img/telbot.png" alt="TestOps launch" width="580" height="480">
++</p>
++
++
++#### Содержание уведомления в Telegram
++
++- :heavy_check_mark: Окружение
++- :heavy_check_mark: Комментарий
++- :heavy_check_mark: Длительность прохождения тестов
++- :heavy_check_mark: Общее количество сценариев
++- :heavy_check_mark: Процент прохождения тестов
++- :heavy_check_mark: Ссылка на Allure отчет
+\ No newline at end of file
+```
