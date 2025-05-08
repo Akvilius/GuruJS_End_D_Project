@@ -1,0 +1,93 @@
+# Instructions
+
+- Following Playwright test failed.
+- Explain why, be concise, respect Playwright best practices.
+- Provide a snippet of code with the fix, if possible.
+
+# Test info
+
+- Name: Тесты для realworld >> Пользователь может оставить комментарий к статье
+- Location: /home/runner/work/GuruJS_End_D_Project/GuruJS_End_D_Project/tests/realWords.spec.js:40:9
+
+# Error details
+
+```
+Error: locator.click: Test timeout of 30000ms exceeded.
+Call log:
+  - waiting for getByRole('link', { name: 'Sign up' })
+
+    at MainPage.goToReg (/home/runner/work/GuruJS_End_D_Project/GuruJS_End_D_Project/src/pages/realWorld/mainPage.js:12:33)
+    at /home/runner/work/GuruJS_End_D_Project/GuruJS_End_D_Project/tests/realWords.spec.js:21:28
+```
+
+# Page snapshot
+
+```yaml
+- dialog "cookieconsent":
+  - text: "We use cookies to optimize our website and our service:"
+  - link "Cookie Policy"
+  - button "Functional only"
+  - button "Accept cookies"
+- link "Skip to content"
+- banner:
+  - heading "AcademyBugs.com" [level=3]:
+    - link "AcademyBugs.com"
+  - navigation:
+    - list:
+      - listitem:
+        - link "Examples of Bugs"
+      - listitem:
+        - link "Types of Bugs"
+      - listitem:
+        - link "Find Bugs"
+      - listitem:
+        - link "Report Bugs"
+      - listitem:
+        - link ""
+- banner:
+  - heading "404 Error" [level=3]
+- heading "Oops! That page can’t be found." [level=6]
+- contentinfo:
+  - list:
+    - listitem:
+      - link "uTest":
+        - img "uTest"
+    - listitem:
+      - link "Terms & Conditions"
+    - listitem:
+      - link "Privacy Policy"
+```
+
+# Test source
+
+```ts
+   1 | export class MainPage {
+   2 |     constructor (page)
+   3 |     {
+   4 |         this.page = page;
+   5 |         this.singupButton = page.getByRole('link', { name: 'Sign up' });
+   6 |         this.loginButton = page.getByRole('link', { name: 'Login' });
+   7 |         this.newArticleButton = page.getByRole('link', { name: 'New Article' });
+   8 |     }
+   9 |
+  10 |     async goToReg () {
+  11 |
+> 12 |         await this.singupButton.click();
+     |                                 ^ Error: locator.click: Test timeout of 30000ms exceeded.
+  13 |     }
+  14 |     async goToLogin () {
+  15 |
+  16 |         await this.loginButton.click();
+  17 |     }
+  18 |     async goToPublishNewArticle () {
+  19 |
+  20 |         await this.newArticleButton.click();
+  21 |     }
+  22 |
+  23 |     async open (url) {
+  24 |         await this.page.goto(url);
+  25 |     }
+  26 |
+  27 |
+  28 | }
+```

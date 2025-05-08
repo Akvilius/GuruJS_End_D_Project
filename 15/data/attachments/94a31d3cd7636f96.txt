@@ -1,0 +1,142 @@
+# Instructions
+
+- Following Playwright test failed.
+- Explain why, be concise, respect Playwright best practices.
+- Provide a snippet of code with the fix, if possible.
+
+# Test info
+
+- Name: Challenge >> GET /challenges (200)
+- Location: /home/runner/work/GuruJS_End_D_Project/GuruJS_End_D_Project/tests/api.spec.js:22:9
+
+# Error details
+
+```
+Error: expect(received).toBe(expected) // Object.is equality
+
+Expected: 201
+Received: 404
+    at /home/runner/work/GuruJS_End_D_Project/GuruJS_End_D_Project/tests/api.spec.js:16:36
+```
+
+# Test source
+
+```ts
+   1 | import { test, expect } from '@playwright/test';
+   2 | import { ChallengerService, ChallengesService, TodosService, HeartbeatService, SecretService }  from '../src/service/index';
+   3 | import { TodosBuilder, HeaderBuilder } from '../src/helpers/api/index';
+   4 | require('dotenv').config();
+   5 |
+   6 | let token;
+   7 | const oldGuid = '62a63304-d598-4430-9cf5-2e52948d7421';
+   8 |
+   9 | test.describe ('Challenge', ()=>{
+   10 |
+   11 |  //1   
+   12 |     test.beforeAll(async ({request}) => {
+   13 |
+   14 |         const challengerService = new ChallengerService(request);
+   15 |         const response = await challengerService.post();
+>  16 |         expect (response.status()).toBe(201);
+      |                                    ^ Error: expect(received).toBe(expected) // Object.is equality
+   17 |         const headers = await response.headers();
+   18 |         token = headers['x-challenger'];
+   19 |         console.log('Это токен: '+token);
+   20 |     });
+   21 | //2
+   22 |     test('GET /challenges (200)', {tag: '@FirstReal'}, async ({request})=>{ 
+   23 |         const challengesService = new ChallengesService(request);
+   24 |         const header = new HeaderBuilder().addToken(token).genereteHeader();
+   25 |         const response = await challengesService.get(header);
+   26 |         const body = await response.json();
+   27 |         expect (response.status()).toBe(200);
+   28 |         expect (body.challenges.length).toBe(59);
+   29 |     });
+   30 | //3
+   31 |     test('GET /todos (200)', {tag: '@GET'}, async ({request})=>{ 
+   32 |         const header = new HeaderBuilder().addToken(token).genereteHeader();
+   33 |         const todosService = new TodosService(request);
+   34 |         const response = await todosService.getTodos(header);
+   35 |         expect (response.status()).toBe(200);
+   36 |     });
+   37 | //4
+   38 |     test('GET /todo (404) not plural', {tag: '@GET'}, async ({request})=>{ 
+   39 |         const header = new HeaderBuilder().addToken(token).genereteHeader();
+   40 |         const todoService = new TodosService(request);
+   41 |         const response = await todoService.getTodo(header);
+   42 |         expect (response.status()).toBe(404);
+   43 |         expect(response.statusText()).toBe('Not Found');
+   44 |     });
+   45 | //5
+   46 |     test('GET /todos/{id} (200)', {tag: '@GET'}, async ({request})=>{ 
+   47 |         const header = new HeaderBuilder().addToken(token).genereteHeader();
+   48 |         const todoidService = new TodosService(request);
+   49 |         const response = await todoidService.getTodosId(header,1);
+   50 |         expect (response.status()).toBe(200);
+   51 |     });
+   52 | //6
+   53 |     test('GET /todos/{id} (404)', {tag: '@GET'}, async ({request})=>{ 
+   54 |         const header = new HeaderBuilder().addToken(token).genereteHeader();
+   55 |         const todoidService = new TodosService(request);
+   56 |         const response = await todoidService.getTodosId(header,99);
+   57 |         expect (response.status()).toBe(404);
+   58 |         expect(response.statusText()).toBe('Not Found');
+   59 |     });
+   60 | //7
+   61 |     test('GET /todos (200) ?filter', {tag: '@GET'}, async ({request})=>{ 
+   62 |         const header = new HeaderBuilder().addToken(token).genereteHeader();
+   63 |         const postTodosService = new TodosService(request);
+   64 |         const body = new TodosBuilder().addTitle().addDoneStatus().addDescription().genereteTodos();
+   65 |         await postTodosService.postTodos(header,body);
+   66 |         const todosService = new TodosService(request);
+   67 |         const response = await todosService.getTodos(header,'?doneStatus=true');
+   68 |         expect (response.status()).toBe(200);
+   69 |         const bodyData = await response.json();
+   70 |         expect(bodyData.todos.every((todo) => todo.doneStatus === true)).toBeTruthy();
+   71 |     });
+   72 | //8
+   73 |     test('	HEAD /todos (200)', {tag: '@HEAD'}, async({ request }) => {
+   74 |         const header = new HeaderBuilder().addToken(token).genereteHeader();
+   75 |         const todosService = new TodosService(request);
+   76 |         const response = await todosService.headTodos(header);
+   77 |         expect (response.status()).toBe(200);
+   78 |     });
+   79 |  //9   
+   80 |     test('POST /todos/ (201)',{tag: '@POST'}, async({ request }) => {
+   81 |         const header = new HeaderBuilder().addToken(token).genereteHeader();
+   82 |         const postTodosService = new TodosService(request);
+   83 |         const body = new TodosBuilder().addTitle().addDoneStatus().addDescription().genereteTodos();
+   84 |         const response = await postTodosService.postTodos(header,body);
+   85 |         expect (response.status()).toBe(201);
+   86 |         expect((await response.json()).title).toContain(body.title);
+   87 |
+   88 |     });
+   89 | //10
+   90 |     test('POST /todos/ (400) doneStatus',{tag: '@POST'}, async({ request }) => {
+   91 |         const header = new HeaderBuilder().addToken(token).genereteHeader();
+   92 |         const body = new TodosBuilder().addTitle(2).addDoneStatus(10).addDescription(1).genereteTodos();
+   93 |         const postTodosService = new TodosService(request);
+   94 |         const response = await postTodosService.postTodos(header,body);
+   95 |         expect (response.status()).toBe(400);
+   96 |         expect(response.statusText()).toBe('Bad Request');
+   97 |         expect((await response.json()).errorMessages).toContainEqual(expect.stringContaining("doneStatus"));
+   98 |     });
+   99 | //11
+  100 |     test('POST /todos (400) title too long',{tag: '@POST'}, async({ request }) => {
+  101 |         const header = new HeaderBuilder().addToken(token).genereteHeader();
+  102 |         const body = new TodosBuilder().addTitle(100).addDoneStatus().addDescription(50).genereteTodos();
+  103 |         const postTodosService = new TodosService(request);
+  104 |         const response = await postTodosService.postTodos(header,body);
+  105 |         expect (response.status()).toBe(400);
+  106 |
+  107 |     });
+  108 | //12
+  109 |     test('POST /todos (400) description too long',{tag: '@POST'}, async({ request }) => {
+  110 |         const header = new HeaderBuilder().addToken(token).genereteHeader();
+  111 |         const body = new TodosBuilder().addTitle(20).addDoneStatus().addDescription(201).genereteTodos();
+  112 |         const postTodosService = new TodosService(request);
+  113 |         const response = await postTodosService.postTodos(header,body);
+  114 |         expect (response.status()).toBe(400);
+  115 |     });
+  116 | //13
+```
