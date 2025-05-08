@@ -1,0 +1,227 @@
+# Instructions
+
+- Following Playwright test failed.
+- Explain why, be concise, respect Playwright best practices.
+- Provide a snippet of code with the fix, if possible.
+
+# Test info
+
+- Name: Challenge >> PUT /challenger/guid CREATE
+- Location: /home/runner/work/GuruJS_End_D_Project/GuruJS_End_D_Project/tests/api.spec.js:312:9
+
+# Error details
+
+```
+Error: expect(received).toBe(expected) // Object.is equality
+
+Expected: 201
+Received: 200
+    at /home/runner/work/GuruJS_End_D_Project/GuruJS_End_D_Project/tests/api.spec.js:321:36
+```
+
+# Test source
+
+```ts
+  221 |         const todosService = new TodosService(request);
+  222 |         const response = await todosService.getTodos(header);
+  223 |         expect (response.status()).toBe(200);
+  224 |     });
+  225 |
+  226 | //26
+  227 |     test('GET /todos (200) JSON', {tag: '@Accept'}, async ({request})=>{ 
+  228 |         const header = new HeaderBuilder().addToken(token).addAccept(`application/json`).genereteHeader();
+  229 |         const todosService = new TodosService(request);
+  230 |         const response = await todosService.getTodos(header);
+  231 |         expect (response.status()).toBe(200);
+  232 |     });
+  233 |  //25
+  234 |     test('GET /todos (200) ANY', {tag: '@Accept'}, async ({request})=>{ 
+  235 |         const header = new HeaderBuilder().addToken(token).addAccept(`*/*`).genereteHeader();
+  236 |         const todosService = new TodosService(request);
+  237 |         const response = await todosService.getTodos(header);
+  238 |         expect (response.status()).toBe(200);
+  239 |     });
+  240 |
+  241 | //28
+  242 |     test('GET /todos (200) XML pref', {tag: '@Accept'}, async ({request})=>{ 
+  243 |         const header = new HeaderBuilder().addToken(token).addAccept(`application/xml, application/json`).genereteHeader();
+  244 |         const todosService = new TodosService(request);
+  245 |         const response = await todosService.getTodos(header);
+  246 |         expect (response.status()).toBe(200);
+  247 |     });
+  248 | //29
+  249 |      test('GET /todos (200) no accept', {tag: '@Accept'}, async ({request})=>{ 
+  250 |         const header = new HeaderBuilder().addToken(token).addAccept(``).genereteHeader();
+  251 |         const todosService = new TodosService(request);
+  252 |         const response = await todosService.getTodos(header);
+  253 |         expect (response.status()).toBe(200);
+  254 |     });
+  255 | //30
+  256 |      test('GET /todos (406)', {tag: '@Accept'}, async ({request})=>{ 
+  257 |         const header = new HeaderBuilder().addToken(token).addAccept(`application/gzip`).genereteHeader();
+  258 |         const todosService = new TodosService(request);
+  259 |         const response = await todosService.getTodos(header);
+  260 |         expect (response.status()).toBe(406);
+  261 |     });
+  262 | //31
+  263 |      test('POST /todos XML', {tag: '@ContentType'}, async ({request})=>{ 
+  264 |         const header = new HeaderBuilder().addToken(token).addAccept(`application/xml`).addContent('application/xml').genereteHeader();
+  265 |         const body = `
+  266 |         <todo>
+  267 |         <doneStatus>true</doneStatus>
+  268 |         <description>test</description>
+  269 |         <title>Create</title>
+  270 |         </todo>`;
+  271 |         const todosService = new TodosService(request);
+  272 |         const response = await todosService.postTodos(header,body);
+  273 |         expect (response.status()).toBe(201);
+  274 |     });
+  275 | //32
+  276 |     test('POST /todos JSON', {tag: '@ContentType'}, async ({request})=>{ 
+  277 |         const header = new HeaderBuilder().addToken(token).addAccept(`application/json`).addContent('application/json').genereteHeader();
+  278 |         const todosService = new TodosService(request);
+  279 |         const body = new TodosBuilder().addTitle(3).addDoneStatus().addDescription(1).genereteTodos();
+  280 |         const response = await todosService.postTodos(header,body);
+  281 |         expect (response.status()).toBe(201);
+  282 |     });
+  283 | //33
+  284 |     test('POST /todos (415)', {tag: '@ContentType'}, async ({request})=>{ 
+  285 |         const header = new HeaderBuilder().addToken(token).addAccept(`application/json`).addContent('application/gzip').genereteHeader();
+  286 |         const todosService = new TodosService(request);
+  287 |         const body = new TodosBuilder().addTitle(3).addDoneStatus().addDescription(1).genereteTodos();
+  288 |         const response = await todosService.postTodos(header,body);
+  289 |         expect (response.status()).toBe(415);
+  290 |     });
+  291 | //34
+  292 |     test('GET /challenger/guid (existing X-CHALLENGER)', {tag: '@Restore'}, async ({request})=>{ 
+  293 |         const header = new HeaderBuilder().addToken(token).genereteHeader();
+  294 |         const challengerService = new ChallengerService(request);
+  295 |         const response = await challengerService.getChallengerGuid(header,token);
+  296 |         expect (response.status()).toBe(200);
+  297 |         const data = await response.json();
+  298 |         expect(data).toHaveProperty("challengeStatus");
+  299 |         expect(data.xChallenger).toEqual(token);
+  300 |     });
+  301 |
+  302 | //35
+  303 |     test('PUT /challenger/guid RESTORE', {tag: '@Restore'}, async ({request})=>{ 
+  304 |         const header = new HeaderBuilder().addToken(token).genereteHeader();
+  305 |         const challengerService = new ChallengerService(request);
+  306 |         const responseGet = await challengerService.getChallengerGuid(header,token);
+  307 |         const data = await responseGet.json();
+  308 |         const response = await challengerService.putChallengerGuid(header,data,token);
+  309 |         expect (response.status()).toBe(200);
+  310 |     });
+  311 | //36
+  312 |     test('PUT /challenger/guid CREATE', {tag: '@Restore'}, async ({request})=>{ 
+  313 |         const header = new HeaderBuilder().addToken(token).genereteHeader();
+  314 |         const headerOld = new HeaderBuilder().addToken(token).genereteHeader();
+  315 |         const challengerService = new ChallengerService(request);
+  316 |         const responseGet = await challengerService.getChallengerGuid(header,token);
+  317 |         const data = await responseGet.json();
+  318 |         data['xChallenger'] = oldGuid;
+  319 |         delete data.xAuthToken;
+  320 |         const response = await challengerService.putChallengerGuid(headerOld,data,oldGuid);
+> 321 |         expect (response.status()).toBe(201);// 200 если существует, повторный прогон
+      |                                    ^ Error: expect(received).toBe(expected) // Object.is equality
+  322 |     });
+  323 | //37
+  324 |     test('GET /challenger/database/guid (200)', {tag: '@Restore'}, async ({request})=>{ 
+  325 |         const header = new HeaderBuilder().addToken(token).genereteHeader();
+  326 |         const challengerService = new ChallengerService(request);
+  327 |         const response = await challengerService.getDatabaseGuid(header,token);
+  328 |         expect (response.status()).toBe(200);
+  329 |     });
+  330 | //38
+  331 |     test('PUT /challenger/database/guid (Update)', {tag: '@Restore'}, async ({request})=>{ 
+  332 |         const header = new HeaderBuilder().addToken(token).genereteHeader();
+  333 |         const challengerService = new ChallengerService(request);
+  334 |         const responseGet = await challengerService.getDatabaseGuid(header,token);
+  335 |         const data = await responseGet.json();
+  336 |         const response = await challengerService.putDatabaseGuid(header,data,token);
+  337 |         expect (response.status()).toBe(204);
+  338 |     });
+  339 |
+  340 | //39
+  341 |     test('POST /todos XML to JSON', {tag: '@MixAccept'}, async ({request})=>{ 
+  342 |     const header = new HeaderBuilder().addToken(token).addAccept(`application/json`).addContent('application/xml').genereteHeader();
+  343 |     const body = `
+  344 |         <todo>
+  345 |         <doneStatus>true</doneStatus>
+  346 |         <description>test 006</description>
+  347 |         <title>Create or not</title>
+  348 |         </todo>`;
+  349 |         const todosService = new TodosService(request);
+  350 |         const response = await todosService.postTodos(header,body);
+  351 |         expect (response.status()).toBe(201);
+  352 |     });
+  353 | //40
+  354 |     test('POST /todos JSON to XML', {tag: '@MixAccept'}, async ({request})=>{ 
+  355 |         const header = new HeaderBuilder().addToken(token).addAccept(`application/xml`).addContent('application/json').genereteHeader();
+  356 |         const todosService = new TodosService(request);
+  357 |         const body = new TodosBuilder().addTitle(2).addDoneStatus().addDescription().genereteTodos();
+  358 |         const response = await todosService.postTodos(header,body);
+  359 |         expect (response.status()).toBe(201);
+  360 |     });
+  361 | //41
+  362 |     test('DELETE /heartbeat (405)', {tag: '@StatusCode'}, async ({request})=>{ 
+  363 |         const header = new HeaderBuilder().addToken(token).genereteHeader();
+  364 |         const heartbeatService = new HeartbeatService(request);
+  365 |         const response = await heartbeatService.deleteHeartbeat(header);
+  366 |         expect (response.status()).toBe(405);
+  367 |     });
+  368 | //42
+  369 |     test('PATCH /heartbeat (500)', {tag: '@StatusCode'}, async ({request})=>{ 
+  370 |         const header = new HeaderBuilder().addToken(token).genereteHeader();
+  371 |         const heartbeatService = new HeartbeatService(request);
+  372 |         const response = await heartbeatService.patchHeartbeat(header);
+  373 |         expect (response.status()).toBe(500);
+  374 |     });
+  375 | //43
+  376 |     test('TRACE /heartbeat (501)', {tag: '@StatusCode'}, async ({request})=>{ 
+  377 |         const header = new HeaderBuilder().addToken(token).genereteHeader();
+  378 |         const heartbeatService = new HeartbeatService(request);
+  379 |         const response = await heartbeatService.traceHeartbeat(header);
+  380 |         expect (response.status()).toBe(501);
+  381 |     });
+  382 | //44
+  383 |     test('GET /heartbeat (204)', {tag: '@StatusCode'}, async ({request})=>{ 
+  384 |         const header = new HeaderBuilder().addToken(token).genereteHeader();
+  385 |         const heartbeatService = new HeartbeatService(request);
+  386 |         const response = await heartbeatService.getHeartbeat(header);
+  387 |         expect (response.status()).toBe(204);
+  388 |     });
+  389 | //45
+  390 |     test('POST /heartbeat as DELETE (405)', {tag: '@HTTP'}, async ({request})=>{ 
+  391 |         const header = new HeaderBuilder().addToken(token).addHttpMethod('DELETE').genereteHeader();
+  392 |         const heartbeatService = new HeartbeatService(request);
+  393 |         const response = await heartbeatService.postHeartbeat(header);
+  394 |         expect (response.status()).toBe(405);
+  395 |     });
+  396 | //46
+  397 |     test('POST /heartbeat as PATCH (500)', {tag: '@HTTP'}, async ({request})=>{ 
+  398 |         const header = new HeaderBuilder().addToken(token).addHttpMethod('PATCH').genereteHeader();
+  399 |         const heartbeatService = new HeartbeatService(request);
+  400 |         const response = await heartbeatService.postHeartbeat(header);
+  401 |         expect (response.status()).toBe(500);
+  402 |     });
+  403 | //47
+  404 |     test('POST /heartbeat as Trace (501)', {tag: '@HTTP'}, async ({request})=>{ 
+  405 |
+  406 |         const header = new HeaderBuilder().addToken(token).addHttpMethod('TRACE').genereteHeader();
+  407 |         const heartbeatService = new HeartbeatService(request);
+  408 |         const response = await heartbeatService.postHeartbeat(header);
+  409 |         expect (response.status()).toBe(501);
+  410 |     });
+  411 | //48
+  412 |     test('POST /secret/token (401)', {tag: '@Authentication'}, async ({request})=>{ 
+  413 |         const header = new HeaderBuilder().addToken(token).addAuth("Basic " + Buffer.from("Admin1:Pa55word").toString("base64")).genereteHeader();
+  414 |         const secretService = new SecretService(request);
+  415 |         const response = await secretService.postSecret(header);
+  416 |         expect (response.status()).toBe(401);
+  417 |     });
+  418 | //49
+  419 |     test('POST /secret/token (201)', {tag: '@Authentication'}, async ({request})=>{ 
+  420 |         const header = new HeaderBuilder().addToken(token).addAuth("Basic " + Buffer.from("admin:password").toString("base64")).genereteHeader();
+  421 |         const secretService = new SecretService(request);
+```
