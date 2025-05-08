@@ -14,6 +14,10 @@ jobs:
     timeout-minutes: 60
     # задаем окружение
     runs-on: ubuntu-latest
+    # Определение переменных окружения из секретов GitHub
+    env:
+      URL_UI: ${{ secrets.URL_UI }}
+      API_URL: ${{ secrets.API_URL }}
     steps:
     # делаем чекаут
       - uses: actions/checkout@v4
