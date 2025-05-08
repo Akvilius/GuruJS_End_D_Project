@@ -6,7 +6,7 @@
     "test": "npx playwright test",
     "realWordsTest": "npx playwright test realWords.spec.js",
     "academyBugsTest": "npx playwright test academybugs.spec.js",
-    "apiTest": "npx playwright test",
+    "apiTest": "npx playwright test api.spec.js",
     "ui": "npx playwright test --ui",
     "allure": "npx allure awesome ./allure-results",
     "allure:open": "allure open ./allure-report",
@@ -23,6 +23,7 @@
   "dependencies": {
     "@faker-js/faker": "^9.7.0",
     "allure": "^3.0.0-beta.11",
-    "allure-playwright": "^3.2.1"
+    "allure-playwright": "^3.2.1",
+    "dotenv": "^16.5.0"
   }
 }

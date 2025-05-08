@@ -1,5 +1,8 @@
 import { defineConfig, devices } from "@playwright/test";
 import * as os from "node:os";
+require('dotenv').config();
+
+const URL_UI = 'https://realworld.qa.guru/';
 //import { URLs } from "./src/types";
 
 /**
@@ -8,7 +11,7 @@ import * as os from "node:os";
  */
 // import dotenv from 'dotenv';
 // import path from 'path';
-// dotenv.config({ path: path.resolve(__dirname, '.env') });
+ //dotenv.config({ path: path.resolve(__dirname, '.env') });
 
 /**
  * @see https://playwright.dev/docs/test-configuration
@@ -23,7 +26,7 @@ export default defineConfig({
   retries: process.env.CI ? 2 : 0,
   /* Opt out of parallel tests on CI. */
   //workers: process.env.CI ? 1 : undefined,
-  workers:2,
+  workers:1,
   /* Reporter to use. See https://playwright.dev/docs/test-reporters */
   //timeout: 60000,
   reporter: [
@@ -46,6 +49,7 @@ export default defineConfig({
     /* Base URL to use in actions like `await page.goto('/')`. */
     // baseURL: 'http://127.0.0.1:3000',
     baseURL: 'https://academybugs.com/',
+    
     /* Collect trace when retrying the failed test. See https://playwright.dev/docs/trace-viewer */
     trace: "on-first-retry",
     screenshot: "only-on-failure",
@@ -56,7 +60,7 @@ export default defineConfig({
   projects: [
     {
       name: 'chromium',
-      use: { ...devices['Desktop Chrome'] }
+      use: { ...devices['Desktop Chrome'] , URL_UI }
     }
 
   ],

@@ -1,8 +1,7 @@
-
-// Подключение тестов
 import { test, expect } from '@playwright/test';
 import { ChallengerService, ChallengesService, TodosService, HeartbeatService, SecretService }  from '../src/service/index';
 import { TodosBuilder, HeaderBuilder } from '../src/helpers/api/index';
+require('dotenv').config();
 
 let token;
 const oldGuid = '62a63304-d598-4430-9cf5-2e52948d7421';
@@ -64,8 +63,8 @@ test.describe ('Challenge', ()=>{
         const postTodosService = new TodosService(request);
         const body = new TodosBuilder().addTitle().addDoneStatus().addDescription().genereteTodos();
         await postTodosService.postTodos(header,body);
-        const TodosFilterService = new TodosService(request);
-        const response = await TodosFilterService.getTodosFilter(header);
+        const todosService = new TodosService(request);
+        const response = await todosService.getTodos(header,'?doneStatus=true');
         expect (response.status()).toBe(200);
         const bodyData = await response.json();
         expect(bodyData.todos.every((todo) => todo.doneStatus === true)).toBeTruthy();

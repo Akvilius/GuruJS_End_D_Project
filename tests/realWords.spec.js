@@ -1,18 +1,14 @@
-
-// Подключение тестов
 import { test, expect } from '@playwright/test';
-
 import { UserBuilder, ArticleBuilder, CommentBuilder} from '../src/helpers/realWorld/builder/index';
-//import { MainPage, RegPage, YoufeedPage, EditorPage, ArticlePage, SettingPage, LoginPage } from '../src/pages/realWorld/index';
-import {App} from '../src/pages/realWorld/app.page'
+import {App} from '../src/pages/realWorld/app.page';
+require('dotenv').config();
 
 
 let app;
-const URL_UI = 'https://realworld.qa.guru/';
+const URL_UI = process.env.URL_UI;
+test.describe ('Тесты для realworld', ()=>{
 
-test.describe ('Урок 5', ()=>{
-
-    test.beforeEach(async({page})=>{ //Создание пользователя
+    test.beforeEach(async({page})=>{
         
         app = new App(page);
         const userBuilder = new UserBuilder()
