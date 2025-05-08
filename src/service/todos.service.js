@@ -1,6 +1,5 @@
-import { TodosBuilder } from "../helpers/api/todos.builder";
 
-const URL = 'https://apichallenges.herokuapp.com/';
+const API_URL = process.env.API_URL;
 
 export class TodosService {
     constructor (request)
@@ -8,36 +7,40 @@ export class TodosService {
         this.request = request;
     }
 
-    async getTodos(token) {
-        const response = await this.request.get(`${URL}todos`,{
+    async getTodos(token, filter=null) {
+        if (filter == null)
+        {
+        const response = await this.request.get(`${API_URL}todos`,{
             headers: token,
         });
         return response;
+        }
+        else
+        {
+            const response = await this.request.get(`${API_URL}todos${filter}`,{
+                headers: token,
+            });
+            return response;
+        }
+        //return response;
     }
 
     async getTodo(token) {
-        const response = await this.request.get(`${URL}todo`,{
+        const response = await this.request.get(`${API_URL}todo`,{
             headers: token,
         });
         return response;
     }
 
     async getTodosId(token, id) {
-        const response = await this.request.get(`${URL}todos/${id}`,{
-            headers: token,
-        });
-        return response;
-    }
-
-    async getTodosFilter(token) {
-        const response = await this.request.get(`${URL}todos?doneStatus=true`,{
+        const response = await this.request.get(`${API_URL}todos/${id}`,{
             headers: token,
         });
         return response;
     }
 
     async postTodos(token, body) {
-        const response = await this.request.post(`${URL}todos`,{
+        const response = await this.request.post(`${API_URL}todos`,{
             headers:token,
             data: body
         });
@@ -45,14 +48,14 @@ export class TodosService {
     }
 
     async headTodos(token) {
-        const response = await this.request.head(`${URL}todos`,{
+        const response = await this.request.head(`${API_URL}todos`,{
             headers:token
         });
         return response;
     }
 
     async putTodos(token, body, id) {
-        const response = await this.request.put(`${URL}todos/${id}`,{
+        const response = await this.request.put(`${API_URL}todos/${id}`,{
             headers: token,
             data: body
         });
@@ -60,7 +63,7 @@ export class TodosService {
     }
 
     async postTodosId(token, body, id) {
-        const response = await this.request.post(`${URL}todos/${id}`,{
+        const response = await this.request.post(`${API_URL}todos/${id}`,{
             headers:token,
             data: body
         });
@@ -68,7 +71,7 @@ export class TodosService {
     }
 
     async deleteTodos(token, id) {
-        const response = await this.request.delete(`${URL}todos/${id}`,{
+        const response = await this.request.delete(`${API_URL}todos/${id}`,{
             headers:token
         });
         return response;

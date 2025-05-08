@@ -1,4 +1,4 @@
-const URL = 'https://apichallenges.herokuapp.com/';
+const URL = `${process.env.API_URL}challenges`
 
 export class ChallengesService {
     constructor (request)
@@ -7,7 +7,7 @@ export class ChallengesService {
     }
 
     async get(token) {
-        const response = await this.request.get(`${URL}challenges`,{
+        const response = await this.request.get(URL,{
             headers: token
         });
         return response;
